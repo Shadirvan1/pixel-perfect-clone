@@ -147,3 +147,114 @@
     color: var(--color-foreground);
   }
 }
+
+@utility brand-mark {
+  width: 3.5rem;
+  height: 3.5rem;
+  border-radius: 1.1rem;
+  background: var(--gradient-brand);
+  display: grid;
+  place-items: center;
+
+  & .brand-inner {
+    width: 2rem;
+    height: 2rem;
+    border-radius: 0.65rem;
+    border: 3px solid oklch(1 0 0);
+    position: relative;
+  }
+
+  & .brand-inner::after {
+    content: "";
+    position: absolute;
+    inset: 0.3rem;
+    border-radius: 999px;
+    border: 3px solid oklch(1 0 0);
+  }
+}
+
+@utility text-gradient-brand {
+  background: var(--gradient-brand);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+@utility field {
+  position: relative;
+
+  & .field-input {
+    width: 100%;
+    border-radius: 0.85rem;
+    border: 1px solid var(--border);
+    background: var(--input);
+    padding: 1.5rem 1rem 0.6rem;
+    font-size: 0.95rem;
+    color: var(--foreground);
+    outline: none;
+  }
+
+  & .field-input:focus {
+    border-color: var(--ring);
+  }
+
+  & .field-label {
+    position: absolute;
+    left: 1rem;
+    top: 1.05rem;
+    font-size: 0.95rem;
+    color: var(--muted-foreground);
+    pointer-events: none;
+    transition: all 0.15s ease;
+  }
+
+  & .field-input:focus + .field-label,
+  & .field-input:not(:placeholder-shown) + .field-label {
+    top: 0.45rem;
+    font-size: 0.7rem;
+  }
+}
+
+@utility btn-primary {
+  width: 100%;
+  border-radius: 0.85rem;
+  background: var(--primary);
+  color: var(--primary-foreground);
+  padding: 0.95rem 1rem;
+  font-weight: 600;
+  transition: filter 0.15s ease;
+
+  &:hover {
+    filter: brightness(1.15);
+  }
+}
+
+@utility btn-soft {
+  width: 100%;
+  border-radius: 0.85rem;
+  background: var(--secondary);
+  color: var(--secondary-foreground);
+  padding: 0.95rem 1rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+
+  &:hover {
+    background: var(--accent);
+  }
+}
+
+@utility btn-outline {
+  width: 100%;
+  border-radius: 0.85rem;
+  border: 1px solid var(--brand-blue);
+  color: oklch(0.75 0.14 258);
+  padding: 0.95rem 1rem;
+  font-weight: 600;
+
+  &:hover {
+    background: color-mix(in oklab, var(--brand-blue) 12%, transparent);
+  }
+}
