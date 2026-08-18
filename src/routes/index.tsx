@@ -49,7 +49,7 @@ function Login() {
         {/* Right: login */}
         <section className="flex items-center justify-center px-8 py-14">
           <div className="w-full max-w-md space-y-5">
-            <h2 className="text-xl font-semibold">Log in to Momento</h2>
+            <h2 className="text-xl font-semibold">Log in to Momento.</h2>
 
             <form className="space-y-3" onSubmit={(e) => e.preventDefault()}>
               <div className="field">
@@ -97,7 +97,7 @@ function Login() {
             </div>
 
             <p className="pt-6 text-center text-sm font-semibold text-muted-foreground">
-              ∞ Momento
+              ∞ Momento.
             </p>
           </div>
         </section>
