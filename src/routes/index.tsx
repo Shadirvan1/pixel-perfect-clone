@@ -1,5 +1,8 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useRouter } from "@tanstack/react-router";
+import { Eye, EyeOff } from "lucide-react";
+import { useState } from "react";
 import collage from "@/assets/collage.png";
+import { loginFn } from "@/lib/auth";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -23,6 +26,47 @@ export const Route = createFileRoute("/")({
 });
 
 function Login() {
+  const router = useRouter();
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [pending, setPending] = useState(false);
+  const [message, setMessage] = useState<
+    { type: "error" | "success"; text: string } | null
+  >(null);
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setMessage(null);
+    setPending(true);
+    try {
+      const result = await loginFn({ data: { username, password } });
+      if (!result.ok) {
+        setMessage({ type: "error", text: result.error });
+        return;
+      }
+      if (result.role === "superadmin") {
+        // Super admin uses the same login page, then redirects to the panel.
+        await router.navigate({ to: "/admin" });
+        return;
+      }
+      const when = new Date(result.loginTime).toLocaleString();
+      setMessage({
+        type: "success",
+        text: `Logged in as ${result.username}. Login time recorded: ${when}`,
+      });
+      setPassword("");
+      setShowPassword(false);
+    } catch {
+      setMessage({
+        type: "error",
+        text: "Could not reach the server. Check the database connection and try again.",
+      });
+    } finally {
+      setPending(false);
+    }
+  }
+
   return (
     <div className="dark min-h-screen bg-background text-foreground flex flex-col font-display">
       <main className="flex-1 grid lg:grid-cols-2">
@@ -51,9 +95,16 @@ function Login() {
           <div className="w-full max-w-md space-y-5">
             <h2 className="text-xl font-semibold">Log in to Momento.</h2>
 
-            <form className="space-y-3" onSubmit={(e) => e.preventDefault()}>
+            <form className="space-y-3" onSubmit={handleSubmit}>
               <div className="field">
-                <input id="user" className="field-input" placeholder=" " autoComplete="username" />
+                <input
+                  id="user"
+                  className="field-input"
+                  placeholder=" "
+                  autoComplete="username"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                />
                 <label htmlFor="user" className="field-label">
                   Mobile number, username or email address
                 </label>
@@ -62,20 +113,48 @@ function Login() {
               <div className="field">
                 <input
                   id="pass"
-                  type="password"
-                  className="field-input"
+                  type={showPassword ? "text" : "password"}
+                  className="field-input pr-12"
                   placeholder=" "
                   autoComplete="current-password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
                 />
                 <label htmlFor="pass" className="field-label">
                   Password
                 </label>
+                <button
+                  type="button"
+                  onClick={() => setShowPassword((v) => !v)}
+                  aria-label={showPassword ? "Hide password" : "Show password"}
+                  aria-pressed={showPassword}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  {showPassword ? (
+                    <EyeOff className="size-5" aria-hidden="true" />
+                  ) : (
+                    <Eye className="size-5" aria-hidden="true" />
+                  )}
+                </button>
               </div>
 
-              <button type="submit" className="btn-primary">
-                Log in
+              <button type="submit" className="btn-primary" disabled={pending}>
+                {pending ? "Logging in…" : "Log in"}
               </button>
             </form>
+
+            {message && (
+              <p
+                role="status"
+                className={
+                  message.type === "error"
+                    ? "text-sm text-red-400"
+                    : "text-sm text-emerald-400"
+                }
+              >
+                {message.text}
+              </p>
+            )}
 
             <p className="pt-6 text-center text-sm font-semibold text-muted-foreground">
               ∞ Momento.

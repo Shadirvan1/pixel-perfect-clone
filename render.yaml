@@ -1,0 +1,23 @@
+# Render Blueprint — deploys this app as a Node web service.
+# Docs: https://render.com/docs/blueprint-spec
+#
+# In Render: New + → "Blueprint" → connect this repo. Render reads this file.
+services:
+  - type: web
+    name: momento-login
+    runtime: node
+    region: oregon # MUST match your database's region for the internal DB URL
+    plan: free
+    # --include=dev is required: vite / typescript / nitro are devDependencies,
+    # and Render sets NODE_ENV=production (which npm would otherwise skip).
+    buildCommand: npm install --include=dev && npm run build
+    startCommand: node .output/server/index.mjs
+    envVars:
+      # Tells Nitro to build a plain Node server (not the Cloudflare default).
+      - key: NITRO_PRESET
+        value: node-server
+      # Set this in the Render dashboard to your database's INTERNAL URL
+      # (host has no ".render.com"; works because the service is in the same
+      # region/network as the DB, and needs no SSL).
+      - key: DATABASE_URL
+        sync: false
